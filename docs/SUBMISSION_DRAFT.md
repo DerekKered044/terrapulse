@@ -32,8 +32,9 @@ TODO: 30-second video **or** a deck of at most 7 slides, at a public link (see i
 
 ## Detailed project description
 
-**What it does.** Five variables (air temperature, precipitation, humidity, wind speed, root-zone
-soil wetness) for eight regions on six continents, monthly from 1981 to 2025. For each combination
+**What it does.** Six variables (air temperature, precipitation, humidity, wind speed, root-zone
+soil wetness from 1981 to 2025, and satellite vegetation greenness from 2000) for eight regions on
+six continents, monthly. For each combination
 the dashboard shows: a map coloured by trend direction and significance; the raw and deseasonalised
 time series with the fitted trend and its 95% range; the slope per decade by least squares and by
 Sen's method; a t-test and a Mann–Kendall test, both corrected for month-to-month persistence; a
@@ -77,6 +78,7 @@ not be used to come up with your idea of how to solve the challenge".
 ## NASA data
 
 - MERRA-2 reanalysis (NASA GMAO): `T2M`, `PRECTOTCORR`, `QV2M`, `WS10M`, `GWETROOT`, monthly, 1981–2025.
+- MODIS/Terra Vegetation Indices Monthly L3 Global 0.05Deg CMG V061 (MOD13C2), NASA LP DAAC: NDVI, monthly, February 2000 – October 2026. https://doi.org/10.5067/MODIS/MOD13C2.061
 - NASA POWER Monthly and Annual API v2.10.0 (NASA LaRC): regional data access. https://power.larc.nasa.gov/
 - NASA GIBS Blue Marble Shaded Relief and Bathymetry: base map imagery.
 - Challenge resources consulted: Giovanni and the challenge statement's list of datasets.

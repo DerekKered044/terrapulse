@@ -106,8 +106,14 @@ def test_committed_ndvi_files_are_real_and_valid_if_present():
     assert status["first_month"] >= "2000-02"
     for region_id in REGIONS:
         frame = ndvi.load_series(region_id)
-        assert frame["value"].notna().mean() > 0.5
         assert frame["value"].min() >= ndvi.VALID_MIN and frame["value"].max() <= ndvi.VALID_MAX
+        # A polar or snowy region legitimately loses its dark and snow-covered months, so no
+        # minimum share of months is demanded. What matters is that enough remains for a trend:
+        # at least three calendar months, observed in most years.
+        body = an.analysis(region_id, "NDVI")
+        used = [m for m, a in zip(body["series"]["month"], body["series"]["anomaly"]) if a is not None]
+        assert len(set(used)) >= 3, region_id
+        assert body["quality"]["months_used"] == len(used) >= 60, region_id
 
 
 def test_static_export_contains_ndvi_only_when_data_is_available():

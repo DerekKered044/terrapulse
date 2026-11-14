@@ -3,9 +3,11 @@
 TerraPulse is ready to show **vegetation greenness (NDVI)** as a sixth variable. It needs eight small
 CSV files, one per region, plus one provenance file. The global maps themselves stay out of git.
 
-Until those files are in `backend/data/ndvi/` and pass validation, NDVI is not listed anywhere in
-the app. Once they are merged to `main`, CI validates them and the dashboard shows NDVI on the next
-deploy. No code change is needed.
+**Status: delivered on 2026-11-14** (pull request #8). This document is kept as the specification
+for the files and for any later re-processing.
+
+Whenever the files in `backend/data/ndvi/` are missing or fail validation, NDVI is not listed
+anywhere in the app. With valid files on `main`, CI checks them and the dashboard shows NDVI.
 
 ## 1. What to deliver
 

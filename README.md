@@ -12,12 +12,13 @@ TerraPulse is Team Orbital Alpha's entry for the NASA Space Apps Challenge 2026 
 
 ## What it does
 
-Pick a variable and a region on the map. TerraPulse shows the monthly NASA MERRA-2 time series for
-1981–2025 and answers the challenge's four questions:
+Pick a variable and a region on the map. TerraPulse shows the monthly NASA time series (MERRA-2
+weather variables for 1981–2025, MODIS vegetation greenness from 2000) and answers the challenge's
+four questions:
 
 | Question | How TerraPulse answers it |
 |---|---|
-| What is changing? | Five variables with plain-language definitions: air temperature, precipitation, humidity, wind speed, root-zone soil wetness |
+| What is changing? | Six variables with plain-language definitions: air temperature, precipitation, humidity, wind speed, root-zone soil wetness, vegetation greenness (NDVI) |
 | Where? | Eight regions on an interactive map, coloured by the direction and significance of their trend |
 | How much? | Rate of change per decade (least squares and Sen's slope) with a 95% confidence interval |
 | Is it significant? | A t-test and a Mann–Kendall test, both corrected for month-to-month persistence |
@@ -59,14 +60,17 @@ See [Limitations](docs/METHODOLOGY.md#7-limitations).
 
 | Resource | Use | Link |
 |---|---|---|
-| MERRA-2 reanalysis, NASA GMAO | All five variables, monthly, 1981–2025 | https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/ |
+| MERRA-2 reanalysis, NASA GMAO | Five weather and soil variables, monthly, 1981–2025 | https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/ |
+| MODIS/Terra Vegetation Indices Monthly 0.05° (MOD13C2 v6.1), NASA LP DAAC | Vegetation greenness (NDVI), monthly, February 2000 – October 2026 | https://doi.org/10.5067/MODIS/MOD13C2.061 |
 | NASA POWER Monthly and Annual API v2.10.0, NASA LaRC | Regional data access (parameters `T2M`, `PRECTOTCORR`, `QV2M`, `WS10M`, `GWETROOT`) | https://power.larc.nasa.gov/ |
 | NASA GIBS, Blue Marble Shaded Relief and Bathymetry | Base map imagery | https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api |
 
-A sixth variable, vegetation greenness (NDVI) from MODIS/Terra MOD13C2 v6.1 (NASA LP DAAC,
-https://doi.org/10.5067/MODIS/MOD13C2.061), is supported by the pipeline and tests. It appears in
-the app only once a team member's regional files are added to `backend/data/ndvi/`; until then no
-NDVI values exist in the app. See [docs/NDVI_HANDOFF.md](docs/NDVI_HANDOFF.md).
+NDVI was downloaded from NASA LP DAAC and reduced to regional monthly means by a team member
+(Kawtar Ag): 0.05° pixels were averaged to 0.2° after removing the fill value, and only pixels
+graded good or marginal by the product's pixel-reliability layer were kept, so snow, cloud and
+values NASA filled in from the long-term average are excluded. The regional files and their
+provenance record are in [`backend/data/ndvi/`](backend/data/ndvi/); the format and the checks
+applied to them are in [docs/NDVI_HANDOFF.md](docs/NDVI_HANDOFF.md).
 
 MERRA-2 is named in the challenge statement. The exact request URL, retrieval time, API version,
 grid-cell count and missing-month count for every series are recorded in
@@ -116,7 +120,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000 npm run dev
 cd backend
 uv run python -m terrapulse.power --force   # re-download every series from NASA POWER
 uv run python -m terrapulse.export          # recompute all statistics and rewrite the static JSON
-uv run pytest                               # 62 tests (1 skipped until NDVI files are delivered)
+uv run pytest                               # 63 tests
 ```
 
 No credentials are needed. NASA may revise MERRA-2 or POWER, so a later download can differ
@@ -139,7 +143,7 @@ Synthetic data are used only in tests, in temporary folders, never in the app.
 
 | Resource | License |
 |---|---|
-| NASA MERRA-2, NASA POWER, NASA GIBS | NASA open data, no restrictions on use; please cite |
+| NASA MERRA-2, NASA POWER, NASA GIBS, NASA MODIS MOD13C2 | NASA open data, no restrictions on use; please cite |
 | Next.js, React, Tailwind CSS, FastAPI, uvicorn, httpx | MIT |
 | MapLibre GL JS, NumPy, pandas, SciPy, statsmodels | BSD-3-Clause |
 | xarray (Apache-2.0), netCDF4-python (MIT): used only by the NDVI reduction script | as stated |
@@ -152,6 +156,9 @@ Data citation: Gelaro, R., et al. (2017). The Modern-Era Retrospective Analysis 
 Applications, Version 2 (MERRA-2). *Journal of Climate*, 30, 5419–5454. Data obtained from the NASA
 Langley Research Center POWER Project, funded through the NASA Earth Science Directorate Applied
 Science Program.
+
+Didan, K. (2021). *MODIS/Terra Vegetation Indices Monthly L3 Global 0.05Deg CMG V061* [Data set].
+NASA Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MODIS/MOD13C2.061
 
 ## Use of Super Intelligence (SI) tools
 
