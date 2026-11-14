@@ -1,12 +1,14 @@
 {
-  "name": "frontend",
+  "name": "terrapulse-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "predev": "node scripts/copy-map-worker.mjs",
+    "prebuild": "node scripts/copy-map-worker.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.18.0",

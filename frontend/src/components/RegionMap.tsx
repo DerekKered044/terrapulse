@@ -51,6 +51,7 @@ export default function RegionMap({ rows, selected, onSelect }: Props) {
     let disposed = false;
     import("maplibre-gl").then((ml) => {
       if (disposed || !container.current) return;
+      ml.setWorkerUrl(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/maplibre-gl-worker.mjs`);
       const map = new ml.Map({
         container: container.current,
         style: {
