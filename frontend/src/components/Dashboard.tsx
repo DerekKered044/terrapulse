@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Plot from "./Plot";
 import { DATA_MODE, getAnalysis, getCatalog, getOverview, type Analysis, type Catalog, type Overview, type VerdictCode } from "@/lib/api";
-import { COLORS, pct, pval, sig, signed, trendColor } from "@/lib/format";
+import { COLORS, pEq, pct, pval, sig, signed, trendColor } from "@/lib/format";
 
 const RegionMap = dynamic(() => import("./RegionMap"), { ssr: false });
 
@@ -121,7 +121,7 @@ export default function Dashboard() {
         y,
         type: "scatter",
         mode: "lines",
-        name: view === "anomaly" ? "Monthly anomaly (seasonal cycle removed)" : "Monthly value",
+        name: view === "anomaly" ? "Monthly anomaly" : "Monthly value",
         line: { color: "rgba(148,163,184,0.75)", width: 1 },
         hovertemplate: `%{x:.2f}: %{y:.3f} ${units}<extra></extra>`,
       },
@@ -156,7 +156,7 @@ export default function Dashboard() {
           mode: "lines",
           line: { width: 0 },
           fillcolor: color + "33",
-          name: "95% confidence range of the slope",
+          name: "95% range of slope",
           hoverinfo: "skip",
         },
         {
@@ -164,7 +164,7 @@ export default function Dashboard() {
           y: line(win.slope_per_decade),
           type: "scatter",
           mode: "lines",
-          name: `Trend ${start}–${end}`,
+          name: "Trend",
           line: { color, width: 3 },
           hoverinfo: "skip",
         },
@@ -194,7 +194,7 @@ export default function Dashboard() {
       const i = starts.indexOf(w.start);
       const j = ends.indexOf(w.end);
       z[i][j] = w.slope_per_decade;
-      text[i][j] = `${w.start}–${w.end}<br>${signed(w.slope_per_decade)} ${units}/decade<br>p = ${pval(w.p_value)}${w.significant ? "" : " (not significant)"}`;
+      text[i][j] = `${w.start}–${w.end}<br>${signed(w.slope_per_decade)} ${units}/decade<br>${pEq(w.p_value)}${w.significant ? "" : " (not significant)"}`;
       zmax = Math.max(zmax, Math.abs(w.slope_per_decade));
       if (!w.significant) {
         nsX.push(w.end);
@@ -497,7 +497,7 @@ export default function Dashboard() {
               <span className="font-medium text-white">
                 {start}–{end}:
               </span>{" "}
-              {signed(win.slope_per_decade)} {units} per decade (95% range {signed(win.ci_low)} to {signed(win.ci_high)}), p = {pval(win.p_value)} —{" "}
+              {signed(win.slope_per_decade)} {units} per decade (95% range {signed(win.ci_low)} to {signed(win.ci_high)}), {pEq(win.p_value)} —{" "}
               {win.significant ? "statistically significant" : "not statistically significant"}.
               {!isFull && " Custom date ranges use the persistence-adjusted t-test; the verdict card always describes the full record."}
             </p>

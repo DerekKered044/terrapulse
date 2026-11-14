@@ -24,6 +24,11 @@ export function pval(p: number): string {
   return p.toFixed(3);
 }
 
+/** "p < 0.001" or "p = 0.012" */
+export function pEq(p: number): string {
+  return p < 0.001 ? "p < 0.001" : `p = ${p.toFixed(3)}`;
+}
+
 export function pct(x: number): string {
   return `${Math.round(x * 100)}%`;
 }
