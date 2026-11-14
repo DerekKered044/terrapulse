@@ -132,6 +132,10 @@ clarity. They are constants in `analysis.py` and `stats.py` and can be changed a
   or regime shifts. The date-window heat map exposes this but does not model it.
 - **AR(1) only.** The t-test adjustment assumes persistence is described by lag-1 autocorrelation.
   Long-memory behaviour would make the intervals too narrow.
+- **Skewed variables.** Precipitation anomalies are far from normally distributed, and in regions
+  with a dry season most of the change sits in the wet months. There the least-squares slope (a
+  change in the mean) and Sen's slope (a change in the typical month) can differ by an order of
+  magnitude, as in the Central Sahel. The headline rate is the change in the mean.
 - **Coarse boxes.** Rectangles average over different land covers, elevations and, in places, ocean.
   A regional mean can hide opposing local trends.
 - **Association, not cause.** A significant trend says the series changed. It does not identify

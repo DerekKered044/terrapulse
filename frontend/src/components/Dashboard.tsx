@@ -175,7 +175,8 @@ export default function Dashboard() {
       layout: {
         xaxis: { title: { text: "Year" }, range: [period[0], period[1] + 1] },
         yaxis: { title: { text: view === "anomaly" ? `Difference from normal (${units})` : `${ready.variable.name} (${units})` } },
-        margin: { t: 34 },
+        margin: { t: 10, b: 84, l: 68 },
+        legend: { orientation: "h", y: -0.24, x: 0 },
       },
     };
   }, [ready, win, view, start, end, units, period]);
@@ -277,8 +278,8 @@ export default function Dashboard() {
       ],
       layout: {
         xaxis: { title: { text: `Trend, ${period[0]}–${period[1]} (${overview.variable.units} per decade)` }, zeroline: true },
-        yaxis: { automargin: true },
-        margin: { l: 8 },
+        yaxis: { automargin: true, ticksuffix: "  " },
+        margin: { l: 210 },
         showlegend: false,
       },
     };
