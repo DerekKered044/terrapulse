@@ -42,11 +42,11 @@ ocean cells they cover (notably `malay-peninsula` and `north-slope`).
 the box, weighted by the cosine of each cell's latitude so that cells count in proportion to their
 area. Cells with a missing value are left out of that month's mean.
 
-### 1.1 Vegetation greenness (NDVI): supported, shown once the data is delivered
+### 1.1 Vegetation greenness (NDVI)
 
-The pipeline also accepts a sixth variable from a different NASA source. It appears in the app only
-when real regional files are present in `backend/data/ndvi/` and pass validation
-(`backend/terrapulse/ndvi.py`); until then it is not listed, and no placeholder values exist.
+The sixth variable comes from a different NASA source. It is served only while real regional files
+are present in `backend/data/ndvi/` and pass validation (`backend/terrapulse/ndvi.py`); no
+placeholder values exist anywhere.
 
 | Item | Value |
 |---|---|
@@ -54,6 +54,25 @@ when real regional files are present in `backend/data/ndvi/` and pass validation
 | Layer | `CMG 0.05 Deg Monthly NDVI`: 16-bit integer, NDVI = stored value ÷ 10000, valid −2000 to 10000, fill −3000 |
 | Period | February 2000 onward (321 months to October 2026) |
 | Delivery | One CSV per region with the monthly mean, the number of valid pixels and the number of land pixels, plus a provenance record. Format and checks: [NDVI_HANDOFF.md](NDVI_HANDOFF.md) |
+
+**How the delivered files were made** (team member's processing, recorded in
+`backend/data/ndvi/provenance.json`): MOD13C2 granules downloaded from NASA LP DAAC on 2026-11-14;
+0.05° pixels averaged in 4 × 4 blocks to a 0.2° grid after removing the fill value and
+out-of-range values; a 0.2° cell kept only if at least 8 of its 16 pixels were valid; only pixels
+with pixel reliability 0 (good) or 1 (marginal) used, which excludes snow/ice, cloud and values
+NASA estimated from the historical record. The reduction to region means was checked on delivery
+against the rules in [NDVI_HANDOFF.md](NDVI_HANDOFF.md). The underlying 0.05° granules were not
+re-processed independently.
+
+**What the quality filter leaves** in the delivered record (321 months):
+
+| Region | Months with at least half of the land pixels valid | Calendar months analysed |
+|---|---|---|
+| Alaska North Slope | 129 | June–September only (snow and polar night remove the rest; May and October are present in too few years) |
+| Upper Colorado | 307 | All except January (snow) |
+| The other six regions | 321 | All |
+
+The North Slope NDVI trend is therefore a growing-season (June–September) trend.
 
 Because the record does not start in January, each variable carries its own period. For NDVI the
 date windows span 2000–2026; the first and last calendar years are partial, annual means are shown
@@ -179,7 +198,7 @@ clarity. They are constants in `analysis.py` and `stats.py` and can be changed a
 
 ## 8. Verification
 
-`backend/tests` (62 tests, run with `uv run pytest`; one is skipped until NDVI files are delivered):
+`backend/tests` (63 tests, run with `uv run pytest`):
 
 | Check | Reference |
 |---|---|
@@ -199,6 +218,7 @@ clarity. They are constants in `analysis.py` and `stats.py` and can be changed a
 | NDVI as a sixth variable end to end; partial years; seasonal gaps; MERRA-2 results unchanged alongside it | synthetic fixtures |
 | Gap-aware lag-1 autocorrelation equals the standard estimator on complete data and beats it on gappy AR(1) noise | simulation |
 | NDVI is absent from the API and the static export unless real, validated files exist | — |
+| The delivered NDVI files pass every format rule, stay within the valid range and leave enough months for a trend in every region | committed files |
 
 ## References
 
